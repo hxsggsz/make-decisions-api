@@ -11,25 +11,26 @@ export class List {
 
     const { id } = paramSchema.parse(req.params);
 
-    try {
-      const findList = await prisma.user.findUniqueOrThrow({
-        where: {
-          id,
-        },
-        include: {
-          options: {
-            orderBy: {
-              createdAt: "asc",
-            },
+    const findList = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        options: {
+          orderBy: {
+            createdAt: "asc",
           },
         },
-      });
+      },
+    });
 
-      return res.json(findList);
-    } catch (error) {
-      console.error("[Get List]: ", error);
-      return res.json(error);
+    if (!findList) {
+      return res
+        .status(HttpStatusCode.NOT_FOUND)
+        .send({ message: "List not found" });
     }
+
+    return res.json(findList);
   }
 
   async createList(req: Request, res: Response) {
@@ -44,15 +45,13 @@ export class List {
         .json({ message: "missing id on body" });
     }
     try {
-      await prisma.user.create({
+      const list = await prisma.user.create({
         data: {
           id,
         },
       });
 
-      return res
-        .status(HttpStatusCode.CREATED)
-        .json({ message: "successfuly created" });
+      return res.status(HttpStatusCode.CREATED).json(list);
     } catch (error) {
       console.error("[Create List]: ", error);
       return res.status(HttpStatusCode.BAD_REQUEST).json(error);
