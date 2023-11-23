@@ -7,6 +7,7 @@ const corsOptions = {
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
+const port = process.env.PORT || 3000;
 
 const app = Express();
 
@@ -16,4 +17,4 @@ app.use(cors(corsOptions));
 
 app.use(router);
 
-app.listen(3333, () => console.log("rodando em http://localhost:3333"));
+app.listen(port, () => console.log(`🚀runnig on http://localhost:${port}`));
